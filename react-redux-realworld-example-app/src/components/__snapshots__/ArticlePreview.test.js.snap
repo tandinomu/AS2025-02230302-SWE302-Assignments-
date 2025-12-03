@@ -1,0 +1,415 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ArticlePreview Component renders article with all data correctly 1`] = `
+<div
+  className="article-preview"
+>
+  <div
+    className="article-meta"
+  >
+    <a
+      href="/@testuser"
+      onClick={[Function]}
+    >
+      <img
+        alt="testuser"
+        src="https://example.com/avatar.jpg"
+      />
+    </a>
+    <div
+      className="info"
+    >
+      <a
+        className="author"
+        href="/@testuser"
+        onClick={[Function]}
+      >
+        testuser
+      </a>
+      <span
+        className="date"
+      >
+        Mon Jan 01 2024
+      </span>
+    </div>
+    <div
+      className="pull-xs-right"
+    >
+      <button
+        className="btn btn-sm btn-outline-primary"
+        onClick={[Function]}
+      >
+        <i
+          className="ion-heart"
+        />
+         
+        5
+      </button>
+    </div>
+  </div>
+  <a
+    className="preview-link"
+    href="/article/test-article"
+    onClick={[Function]}
+  >
+    <h1>
+      Test Article Title
+    </h1>
+    <p>
+      Test article description
+    </p>
+    <span>
+      Read more...
+    </span>
+    <ul
+      className="tag-list"
+    >
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        react
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        testing
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        javascript
+      </li>
+    </ul>
+  </a>
+</div>
+`;
+
+exports[`ArticlePreview Component renders article with default author image 1`] = `
+<div
+  className="article-preview"
+>
+  <div
+    className="article-meta"
+  >
+    <a
+      href="/@testuser"
+      onClick={[Function]}
+    >
+      <img
+        alt="testuser"
+        src="https://static.productionready.io/images/smiley-cyrus.jpg"
+      />
+    </a>
+    <div
+      className="info"
+    >
+      <a
+        className="author"
+        href="/@testuser"
+        onClick={[Function]}
+      >
+        testuser
+      </a>
+      <span
+        className="date"
+      >
+        Mon Jan 01 2024
+      </span>
+    </div>
+    <div
+      className="pull-xs-right"
+    >
+      <button
+        className="btn btn-sm btn-outline-primary"
+        onClick={[Function]}
+      >
+        <i
+          className="ion-heart"
+        />
+         
+        5
+      </button>
+    </div>
+  </div>
+  <a
+    className="preview-link"
+    href="/article/test-article"
+    onClick={[Function]}
+  >
+    <h1>
+      Test Article Title
+    </h1>
+    <p>
+      Test article description
+    </p>
+    <span>
+      Read more...
+    </span>
+    <ul
+      className="tag-list"
+    >
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        react
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        testing
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        javascript
+      </li>
+    </ul>
+  </a>
+</div>
+`;
+
+exports[`ArticlePreview Component renders article with multiple tags 1`] = `
+<div
+  className="article-preview"
+>
+  <div
+    className="article-meta"
+  >
+    <a
+      href="/@testuser"
+      onClick={[Function]}
+    >
+      <img
+        alt="testuser"
+        src="https://example.com/avatar.jpg"
+      />
+    </a>
+    <div
+      className="info"
+    >
+      <a
+        className="author"
+        href="/@testuser"
+        onClick={[Function]}
+      >
+        testuser
+      </a>
+      <span
+        className="date"
+      >
+        Mon Jan 01 2024
+      </span>
+    </div>
+    <div
+      className="pull-xs-right"
+    >
+      <button
+        className="btn btn-sm btn-outline-primary"
+        onClick={[Function]}
+      >
+        <i
+          className="ion-heart"
+        />
+         
+        5
+      </button>
+    </div>
+  </div>
+  <a
+    className="preview-link"
+    href="/article/test-article"
+    onClick={[Function]}
+  >
+    <h1>
+      Test Article Title
+    </h1>
+    <p>
+      Test article description
+    </p>
+    <span>
+      Read more...
+    </span>
+    <ul
+      className="tag-list"
+    >
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        react
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        redux
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        testing
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        javascript
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        jest
+      </li>
+    </ul>
+  </a>
+</div>
+`;
+
+exports[`ArticlePreview Component renders article without tags 1`] = `
+<div
+  className="article-preview"
+>
+  <div
+    className="article-meta"
+  >
+    <a
+      href="/@testuser"
+      onClick={[Function]}
+    >
+      <img
+        alt="testuser"
+        src="https://example.com/avatar.jpg"
+      />
+    </a>
+    <div
+      className="info"
+    >
+      <a
+        className="author"
+        href="/@testuser"
+        onClick={[Function]}
+      >
+        testuser
+      </a>
+      <span
+        className="date"
+      >
+        Mon Jan 01 2024
+      </span>
+    </div>
+    <div
+      className="pull-xs-right"
+    >
+      <button
+        className="btn btn-sm btn-outline-primary"
+        onClick={[Function]}
+      >
+        <i
+          className="ion-heart"
+        />
+         
+        5
+      </button>
+    </div>
+  </div>
+  <a
+    className="preview-link"
+    href="/article/test-article"
+    onClick={[Function]}
+  >
+    <h1>
+      Test Article Title
+    </h1>
+    <p>
+      Test article description
+    </p>
+    <span>
+      Read more...
+    </span>
+    <ul
+      className="tag-list"
+    />
+  </a>
+</div>
+`;
+
+exports[`ArticlePreview Component renders favorited article correctly 1`] = `
+<div
+  className="article-preview"
+>
+  <div
+    className="article-meta"
+  >
+    <a
+      href="/@testuser"
+      onClick={[Function]}
+    >
+      <img
+        alt="testuser"
+        src="https://example.com/avatar.jpg"
+      />
+    </a>
+    <div
+      className="info"
+    >
+      <a
+        className="author"
+        href="/@testuser"
+        onClick={[Function]}
+      >
+        testuser
+      </a>
+      <span
+        className="date"
+      >
+        Mon Jan 01 2024
+      </span>
+    </div>
+    <div
+      className="pull-xs-right"
+    >
+      <button
+        className="btn btn-sm btn-primary"
+        onClick={[Function]}
+      >
+        <i
+          className="ion-heart"
+        />
+         
+        10
+      </button>
+    </div>
+  </div>
+  <a
+    className="preview-link"
+    href="/article/test-article"
+    onClick={[Function]}
+  >
+    <h1>
+      Test Article Title
+    </h1>
+    <p>
+      Test article description
+    </p>
+    <span>
+      Read more...
+    </span>
+    <ul
+      className="tag-list"
+    >
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        react
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        testing
+      </li>
+      <li
+        className="tag-default tag-pill tag-outline"
+      >
+        javascript
+      </li>
+    </ul>
+  </a>
+</div>
+`;

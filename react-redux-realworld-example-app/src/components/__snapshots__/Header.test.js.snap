@@ -1,0 +1,133 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header Component renders logged in view when currentUser exists 1`] = `
+<nav
+  className="navbar navbar-light"
+>
+  <div
+    className="container"
+  >
+    <a
+      className="navbar-brand"
+      href="/"
+      onClick={[Function]}
+    >
+      conduit
+    </a>
+    <ul
+      className="nav navbar-nav pull-xs-right"
+    >
+      <li
+        className="nav-item"
+      >
+        <a
+          className="nav-link"
+          href="/"
+          onClick={[Function]}
+        >
+          Home
+        </a>
+      </li>
+      <li
+        className="nav-item"
+      >
+        <a
+          className="nav-link"
+          href="/editor"
+          onClick={[Function]}
+        >
+          <i
+            className="ion-compose"
+          />
+           New Post
+        </a>
+      </li>
+      <li
+        className="nav-item"
+      >
+        <a
+          className="nav-link"
+          href="/settings"
+          onClick={[Function]}
+        >
+          <i
+            className="ion-gear-a"
+          />
+           Settings
+        </a>
+      </li>
+      <li
+        className="nav-item"
+      >
+        <a
+          className="nav-link"
+          href="/@testuser"
+          onClick={[Function]}
+        >
+          <img
+            alt="testuser"
+            className="user-pic"
+            src="https://example.com/avatar.jpg"
+          />
+          testuser
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+`;
+
+exports[`Header Component renders logged out view when currentUser is null 1`] = `
+<nav
+  className="navbar navbar-light"
+>
+  <div
+    className="container"
+  >
+    <a
+      className="navbar-brand"
+      href="/"
+      onClick={[Function]}
+    >
+      conduit
+    </a>
+    <ul
+      className="nav navbar-nav pull-xs-right"
+    >
+      <li
+        className="nav-item"
+      >
+        <a
+          className="nav-link"
+          href="/"
+          onClick={[Function]}
+        >
+          Home
+        </a>
+      </li>
+      <li
+        className="nav-item"
+      >
+        <a
+          className="nav-link"
+          href="/login"
+          onClick={[Function]}
+        >
+          Sign in
+        </a>
+      </li>
+      <li
+        className="nav-item"
+      >
+        <a
+          className="nav-link"
+          href="/register"
+          onClick={[Function]}
+        >
+          Sign up
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+`;

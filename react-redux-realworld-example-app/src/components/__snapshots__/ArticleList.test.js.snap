@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ArticleList Component renders article list with multiple articles 1`] = `
+<div>
+  <ArticlePreview
+    article={
+      Object {
+        "description": "Description 1",
+        "slug": "article-1",
+        "tagList": Array [],
+        "title": "Test Article 1",
+      }
+    }
+  />
+  <ArticlePreview
+    article={
+      Object {
+        "description": "Description 2",
+        "slug": "article-2",
+        "tagList": Array [],
+        "title": "Test Article 2",
+      }
+    }
+  />
+  <ArticlePreview
+    article={
+      Object {
+        "description": "Description 3",
+        "slug": "article-3",
+        "tagList": Array [],
+        "title": "Test Article 3",
+      }
+    }
+  />
+  <ListPagination
+    articlesCount={3}
+    currentPage={0}
+    pager={undefined}
+  />
+</div>
+`;
+
+exports[`ArticleList Component renders empty state when articles array is empty 1`] = `
+<div
+  className="article-preview"
+>
+  No articles are here... yet.
+</div>
+`;
+
+exports[`ArticleList Component renders loading state when articles is null 1`] = `
+<div
+  className="article-preview"
+>
+  Loading...
+</div>
+`;
+
+exports[`ArticleList Component renders loading state when articles is undefined 1`] = `
+<div
+  className="article-preview"
+>
+  Loading...
+</div>
+`;
+
+exports[`ArticleList Component renders single article correctly 1`] = `
+<div>
+  <ArticlePreview
+    article={
+      Object {
+        "description": "Single Description",
+        "slug": "single-article",
+        "tagList": Array [
+          "react",
+        ],
+        "title": "Single Article",
+      }
+    }
+  />
+  <ListPagination
+    articlesCount={1}
+    currentPage={undefined}
+    pager={undefined}
+  />
+</div>
+`;

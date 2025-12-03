@@ -1,0 +1,367 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Component renders login form in progress state 1`] = `
+<div
+  className="auth-page"
+>
+  <div
+    className="container page"
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="col-md-6 offset-md-3 col-xs-12"
+      >
+        <h1
+          className="text-xs-center"
+        >
+          Sign In
+        </h1>
+        <p
+          className="text-xs-center"
+        >
+          <a
+            href="/register"
+            onClick={[Function]}
+          >
+            Need an account?
+          </a>
+        </p>
+        <ListErrors
+          errors={null}
+        />
+        <form
+          onSubmit={[Function]}
+        >
+          <fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Email"
+                type="email"
+                value="test@example.com"
+              />
+            </fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Password"
+                type="password"
+                value="password123"
+              />
+            </fieldset>
+            <button
+              className="btn btn-lg btn-primary pull-xs-right"
+              disabled={true}
+              type="submit"
+            >
+              Sign in
+            </button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Login Component renders login form structure correctly 1`] = `
+<div
+  className="auth-page"
+>
+  <div
+    className="container page"
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="col-md-6 offset-md-3 col-xs-12"
+      >
+        <h1
+          className="text-xs-center"
+        >
+          Sign In
+        </h1>
+        <p
+          className="text-xs-center"
+        >
+          <a
+            href="/register"
+            onClick={[Function]}
+          >
+            Need an account?
+          </a>
+        </p>
+        <ListErrors
+          errors={undefined}
+        />
+        <form
+          onSubmit={[Function]}
+        >
+          <fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Email"
+                type="email"
+                value=""
+              />
+            </fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Password"
+                type="password"
+                value=""
+              />
+            </fieldset>
+            <button
+              className="btn btn-lg btn-primary pull-xs-right"
+              disabled={false}
+              type="submit"
+            >
+              Sign in
+            </button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Login Component renders login form with empty fields 1`] = `
+<div
+  className="auth-page"
+>
+  <div
+    className="container page"
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="col-md-6 offset-md-3 col-xs-12"
+      >
+        <h1
+          className="text-xs-center"
+        >
+          Sign In
+        </h1>
+        <p
+          className="text-xs-center"
+        >
+          <a
+            href="/register"
+            onClick={[Function]}
+          >
+            Need an account?
+          </a>
+        </p>
+        <ListErrors
+          errors={null}
+        />
+        <form
+          onSubmit={[Function]}
+        >
+          <fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Email"
+                type="email"
+                value=""
+              />
+            </fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Password"
+                type="password"
+                value=""
+              />
+            </fieldset>
+            <button
+              className="btn btn-lg btn-primary pull-xs-right"
+              disabled={false}
+              type="submit"
+            >
+              Sign in
+            </button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Login Component renders login form with errors 1`] = `
+<div
+  className="auth-page"
+>
+  <div
+    className="container page"
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="col-md-6 offset-md-3 col-xs-12"
+      >
+        <h1
+          className="text-xs-center"
+        >
+          Sign In
+        </h1>
+        <p
+          className="text-xs-center"
+        >
+          <a
+            href="/register"
+            onClick={[Function]}
+          >
+            Need an account?
+          </a>
+        </p>
+        <ListErrors
+          errors={
+            Object {
+              "email or password": Array [
+                "is invalid",
+              ],
+            }
+          }
+        />
+        <form
+          onSubmit={[Function]}
+        >
+          <fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Email"
+                type="email"
+                value="test@example.com"
+              />
+            </fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Password"
+                type="password"
+                value="wrong"
+              />
+            </fieldset>
+            <button
+              className="btn btn-lg btn-primary pull-xs-right"
+              disabled={false}
+              type="submit"
+            >
+              Sign in
+            </button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Login Component renders login form with filled email and password 1`] = `
+<div
+  className="auth-page"
+>
+  <div
+    className="container page"
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="col-md-6 offset-md-3 col-xs-12"
+      >
+        <h1
+          className="text-xs-center"
+        >
+          Sign In
+        </h1>
+        <p
+          className="text-xs-center"
+        >
+          <a
+            href="/register"
+            onClick={[Function]}
+          >
+            Need an account?
+          </a>
+        </p>
+        <ListErrors
+          errors={null}
+        />
+        <form
+          onSubmit={[Function]}
+        >
+          <fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Email"
+                type="email"
+                value="test@example.com"
+              />
+            </fieldset>
+            <fieldset
+              className="form-group"
+            >
+              <input
+                className="form-control form-control-lg"
+                onChange={[Function]}
+                placeholder="Password"
+                type="password"
+                value="password123"
+              />
+            </fieldset>
+            <button
+              className="btn btn-lg btn-primary pull-xs-right"
+              disabled={false}
+              type="submit"
+            >
+              Sign in
+            </button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+`;

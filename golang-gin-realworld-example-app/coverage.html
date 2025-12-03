@@ -1,0 +1,1546 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>articles: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">realworld-backend/articles/models.go (76.9%)</option>
+				
+				<option value="file1">realworld-backend/articles/routers.go (58.5%)</option>
+				
+				<option value="file2">realworld-backend/articles/serializers.go (100.0%)</option>
+				
+				<option value="file3">realworld-backend/articles/validators.go (88.9%)</option>
+				
+				<option value="file4">realworld-backend/common/database.go (100.0%)</option>
+				
+				<option value="file5">realworld-backend/common/utils.go (100.0%)</option>
+				
+				<option value="file6">realworld-backend/hello.go (0.0%)</option>
+				
+				<option value="file7">realworld-backend/users/middlewares.go (100.0%)</option>
+				
+				<option value="file8">realworld-backend/users/models.go (100.0%)</option>
+				
+				<option value="file9">realworld-backend/users/routers.go (100.0%)</option>
+				
+				<option value="file10">realworld-backend/users/serializers.go (100.0%)</option>
+				
+				<option value="file11">realworld-backend/users/validators.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package articles
+
+import (
+        _ "fmt"
+        "github.com/jinzhu/gorm"
+        "realworld-backend/common"
+        "realworld-backend/users"
+        "strconv"
+)
+
+type ArticleModel struct {
+        gorm.Model
+        Slug        string `gorm:"unique_index"`
+        Title       string
+        Description string `gorm:"size:2048"`
+        Body        string `gorm:"size:2048"`
+        Author      ArticleUserModel
+        AuthorID    uint
+        Tags        []TagModel     `gorm:"many2many:article_tags;"`
+        Comments    []CommentModel `gorm:"ForeignKey:ArticleID"`
+}
+
+type ArticleUserModel struct {
+        gorm.Model
+        UserModel      users.UserModel
+        UserModelID    uint
+        ArticleModels  []ArticleModel  `gorm:"ForeignKey:AuthorID"`
+        FavoriteModels []FavoriteModel `gorm:"ForeignKey:FavoriteByID"`
+}
+
+type FavoriteModel struct {
+        gorm.Model
+        Favorite     ArticleModel
+        FavoriteID   uint
+        FavoriteBy   ArticleUserModel
+        FavoriteByID uint
+}
+
+type TagModel struct {
+        gorm.Model
+        Tag           string         `gorm:"unique_index"`
+        ArticleModels []ArticleModel `gorm:"many2many:article_tags;"`
+}
+
+type CommentModel struct {
+        gorm.Model
+        Article   ArticleModel
+        ArticleID uint
+        Author    ArticleUserModel
+        AuthorID  uint
+        Body      string `gorm:"size:2048"`
+}
+
+func GetArticleUserModel(userModel users.UserModel) ArticleUserModel <span class="cov8" title="1">{
+        var articleUserModel ArticleUserModel
+        if userModel.ID == 0 </span><span class="cov8" title="1">{
+                return articleUserModel
+        }</span>
+        <span class="cov8" title="1">db := common.GetDB()
+        db.Where(&amp;ArticleUserModel{
+                UserModelID: userModel.ID,
+        }).FirstOrCreate(&amp;articleUserModel)
+        articleUserModel.UserModel = userModel
+        return articleUserModel</span>
+}
+
+func (article ArticleModel) favoritesCount() uint <span class="cov8" title="1">{
+        db := common.GetDB()
+        var count uint
+        db.Model(&amp;FavoriteModel{}).Where(FavoriteModel{
+                FavoriteID: article.ID,
+        }).Count(&amp;count)
+        return count
+}</span>
+
+func (article ArticleModel) isFavoriteBy(user ArticleUserModel) bool <span class="cov8" title="1">{
+        db := common.GetDB()
+        var favorite FavoriteModel
+        db.Where(FavoriteModel{
+                FavoriteID:   article.ID,
+                FavoriteByID: user.ID,
+        }).First(&amp;favorite)
+        return favorite.ID != 0
+}</span>
+
+func (article ArticleModel) favoriteBy(user ArticleUserModel) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        var favorite FavoriteModel
+        err := db.FirstOrCreate(&amp;favorite, &amp;FavoriteModel{
+                FavoriteID:   article.ID,
+                FavoriteByID: user.ID,
+        }).Error
+        return err
+}</span>
+
+func (article ArticleModel) unFavoriteBy(user ArticleUserModel) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        err := db.Where(FavoriteModel{
+                FavoriteID:   article.ID,
+                FavoriteByID: user.ID,
+        }).Delete(FavoriteModel{}).Error
+        return err
+}</span>
+
+func SaveOne(data interface{}) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        err := db.Save(data).Error
+        return err
+}</span>
+
+func FindOneArticle(condition interface{}) (ArticleModel, error) <span class="cov8" title="1">{
+        db := common.GetDB()
+        var model ArticleModel
+        tx := db.Begin()
+        tx.Where(condition).First(&amp;model)
+        tx.Model(&amp;model).Related(&amp;model.Author, "Author")
+        tx.Model(&amp;model.Author).Related(&amp;model.Author.UserModel)
+        tx.Model(&amp;model).Related(&amp;model.Tags, "Tags")
+        err := tx.Commit().Error
+        return model, err
+}</span>
+
+func (self *ArticleModel) getComments() error <span class="cov8" title="1">{
+        db := common.GetDB()
+        tx := db.Begin()
+        tx.Model(self).Related(&amp;self.Comments, "Comments")
+        for i, _ := range self.Comments </span><span class="cov8" title="1">{
+                tx.Model(&amp;self.Comments[i]).Related(&amp;self.Comments[i].Author, "Author")
+                tx.Model(&amp;self.Comments[i].Author).Related(&amp;self.Comments[i].Author.UserModel)
+        }</span>
+        <span class="cov8" title="1">err := tx.Commit().Error
+        return err</span>
+}
+
+func getAllTags() ([]TagModel, error) <span class="cov8" title="1">{
+        db := common.GetDB()
+        var models []TagModel
+        err := db.Find(&amp;models).Error
+        return models, err
+}</span>
+
+func FindManyArticle(tag, author, limit, offset, favorited string) ([]ArticleModel, int, error) <span class="cov8" title="1">{
+        db := common.GetDB()
+        var models []ArticleModel
+        var count int
+
+        offset_int, err := strconv.Atoi(offset)
+        if err != nil </span><span class="cov8" title="1">{
+                offset_int = 0
+        }</span>
+
+        <span class="cov8" title="1">limit_int, err := strconv.Atoi(limit)
+        if err != nil </span><span class="cov8" title="1">{
+                limit_int = 20
+        }</span>
+
+        <span class="cov8" title="1">tx := db.Begin()
+        if tag != "" </span><span class="cov0" title="0">{
+                var tagModel TagModel
+                tx.Where(TagModel{Tag: tag}).First(&amp;tagModel)
+                if tagModel.ID != 0 </span><span class="cov0" title="0">{
+                        tx.Model(&amp;tagModel).Offset(offset_int).Limit(limit_int).Related(&amp;models, "ArticleModels")
+                        count = tx.Model(&amp;tagModel).Association("ArticleModels").Count()
+                }</span>
+        } else<span class="cov8" title="1"> if author != "" </span><span class="cov0" title="0">{
+                var userModel users.UserModel
+                tx.Where(users.UserModel{Username: author}).First(&amp;userModel)
+                articleUserModel := GetArticleUserModel(userModel)
+
+                if articleUserModel.ID != 0 </span><span class="cov0" title="0">{
+                        count = tx.Model(&amp;articleUserModel).Association("ArticleModels").Count()
+                        tx.Model(&amp;articleUserModel).Offset(offset_int).Limit(limit_int).Related(&amp;models, "ArticleModels")
+                }</span>
+        } else<span class="cov8" title="1"> if favorited != "" </span><span class="cov0" title="0">{
+                var userModel users.UserModel
+                tx.Where(users.UserModel{Username: favorited}).First(&amp;userModel)
+                articleUserModel := GetArticleUserModel(userModel)
+                if articleUserModel.ID != 0 </span><span class="cov0" title="0">{
+                        var favoriteModels []FavoriteModel
+                        tx.Where(FavoriteModel{
+                                FavoriteByID: articleUserModel.ID,
+                        }).Offset(offset_int).Limit(limit_int).Find(&amp;favoriteModels)
+
+                        count = tx.Model(&amp;articleUserModel).Association("FavoriteModels").Count()
+                        for _, favorite := range favoriteModels </span><span class="cov0" title="0">{
+                                var model ArticleModel
+                                tx.Model(&amp;favorite).Related(&amp;model, "Favorite")
+                                models = append(models, model)
+                        }</span>
+                }
+        } else<span class="cov8" title="1"> {
+                db.Model(&amp;models).Count(&amp;count)
+                db.Offset(offset_int).Limit(limit_int).Find(&amp;models)
+        }</span>
+
+        <span class="cov8" title="1">for i, _ := range models </span><span class="cov8" title="1">{
+                tx.Model(&amp;models[i]).Related(&amp;models[i].Author, "Author")
+                tx.Model(&amp;models[i].Author).Related(&amp;models[i].Author.UserModel)
+                tx.Model(&amp;models[i]).Related(&amp;models[i].Tags, "Tags")
+        }</span>
+        <span class="cov8" title="1">err = tx.Commit().Error
+        return models, count, err</span>
+}
+
+func (self *ArticleUserModel) GetArticleFeed(limit, offset string) ([]ArticleModel, int, error) <span class="cov8" title="1">{
+        db := common.GetDB()
+        var models []ArticleModel
+        var count int
+
+        offset_int, err := strconv.Atoi(offset)
+        if err != nil </span><span class="cov0" title="0">{
+                offset_int = 0
+        }</span>
+        <span class="cov8" title="1">limit_int, err := strconv.Atoi(limit)
+        if err != nil </span><span class="cov0" title="0">{
+                limit_int = 20
+        }</span>
+
+        <span class="cov8" title="1">tx := db.Begin()
+        followings := self.UserModel.GetFollowings()
+        var articleUserModels []uint
+        for _, following := range followings </span><span class="cov0" title="0">{
+                articleUserModel := GetArticleUserModel(following)
+                articleUserModels = append(articleUserModels, articleUserModel.ID)
+        }</span>
+
+        <span class="cov8" title="1">tx.Where("author_id in (?)", articleUserModels).Order("updated_at desc").Offset(offset_int).Limit(limit_int).Find(&amp;models)
+
+        for i, _ := range models </span><span class="cov0" title="0">{
+                tx.Model(&amp;models[i]).Related(&amp;models[i].Author, "Author")
+                tx.Model(&amp;models[i].Author).Related(&amp;models[i].Author.UserModel)
+                tx.Model(&amp;models[i]).Related(&amp;models[i].Tags, "Tags")
+        }</span>
+        <span class="cov8" title="1">err = tx.Commit().Error
+        return models, count, err</span>
+}
+
+func (model *ArticleModel) setTags(tags []string) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        var tagList []TagModel
+        for _, tag := range tags </span><span class="cov8" title="1">{
+                var tagModel TagModel
+                err := db.FirstOrCreate(&amp;tagModel, TagModel{Tag: tag}).Error
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov8" title="1">tagList = append(tagList, tagModel)</span>
+        }
+        <span class="cov8" title="1">model.Tags = tagList
+        return nil</span>
+}
+
+func (model *ArticleModel) Update(data interface{}) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        err := db.Model(model).Update(data).Error
+        return err
+}</span>
+
+func DeleteArticleModel(condition interface{}) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        err := db.Where(condition).Delete(ArticleModel{}).Error
+        return err
+}</span>
+
+func DeleteCommentModel(condition interface{}) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        err := db.Where(condition).Delete(CommentModel{}).Error
+        return err
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package articles
+
+import (
+        "errors"
+        "realworld-backend/common"
+        "realworld-backend/users"
+        "github.com/gin-gonic/gin"
+        "net/http"
+        "strconv"
+)
+
+func ArticlesRegister(router *gin.RouterGroup) <span class="cov8" title="1">{
+        router.POST("/", ArticleCreate)
+        router.PUT("/:slug", ArticleUpdate)
+        router.DELETE("/:slug", ArticleDelete)
+        router.POST("/:slug/favorite", ArticleFavorite)
+        router.DELETE("/:slug/favorite", ArticleUnfavorite)
+        router.POST("/:slug/comments", ArticleCommentCreate)
+        router.DELETE("/:slug/comments/:id", ArticleCommentDelete)
+}</span>
+
+func ArticlesAnonymousRegister(router *gin.RouterGroup) <span class="cov8" title="1">{
+        router.GET("/", ArticleList)
+        router.GET("/:slug", ArticleRetrieve)
+        router.GET("/:slug/comments", ArticleCommentList)
+}</span>
+
+func TagsAnonymousRegister(router *gin.RouterGroup) <span class="cov0" title="0">{
+        router.GET("/", TagList)
+}</span>
+
+func ArticleCreate(c *gin.Context) <span class="cov8" title="1">{
+        articleModelValidator := NewArticleModelValidator()
+        if err := articleModelValidator.Bind(c); err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewValidatorError(err))
+                return
+        }</span>
+        //fmt.Println(articleModelValidator.articleModel.Author.UserModel)
+
+        <span class="cov8" title="1">if err := SaveOne(&amp;articleModelValidator.articleModel); err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := ArticleSerializer{c, articleModelValidator.articleModel}
+        c.JSON(http.StatusCreated, gin.H{"article": serializer.Response()})</span>
+}
+
+func ArticleList(c *gin.Context) <span class="cov8" title="1">{
+        //condition := ArticleModel{}
+        tag := c.Query("tag")
+        author := c.Query("author")
+        favorited := c.Query("favorited")
+        limit := c.Query("limit")
+        offset := c.Query("offset")
+        articleModels, modelCount, err := FindManyArticle(tag, author, limit, offset, favorited)
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid param")))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := ArticlesSerializer{c, articleModels}
+        c.JSON(http.StatusOK, gin.H{"articles": serializer.Response(), "articlesCount": modelCount})</span>
+}
+
+func ArticleFeed(c *gin.Context) <span class="cov0" title="0">{
+        limit := c.Query("limit")
+        offset := c.Query("offset")
+        myUserModel := c.MustGet("my_user_model").(users.UserModel)
+        if myUserModel.ID == 0 </span><span class="cov0" title="0">{
+                c.AbortWithError(http.StatusUnauthorized, errors.New("{error : \"Require auth!\"}"))
+                return
+        }</span>
+        <span class="cov0" title="0">articleUserModel := GetArticleUserModel(myUserModel)
+        articleModels, modelCount, err := articleUserModel.GetArticleFeed(limit, offset)
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid param")))
+                return
+        }</span>
+        <span class="cov0" title="0">serializer := ArticlesSerializer{c, articleModels}
+        c.JSON(http.StatusOK, gin.H{"articles": serializer.Response(), "articlesCount": modelCount})</span>
+}
+
+func ArticleRetrieve(c *gin.Context) <span class="cov8" title="1">{
+        slug := c.Param("slug")
+        if slug == "feed" </span><span class="cov0" title="0">{
+                ArticleFeed(c)
+                return
+        }</span>
+        <span class="cov8" title="1">articleModel, err := FindOneArticle(&amp;ArticleModel{Slug: slug})
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := ArticleSerializer{c, articleModel}
+        c.JSON(http.StatusOK, gin.H{"article": serializer.Response()})</span>
+}
+
+func ArticleUpdate(c *gin.Context) <span class="cov8" title="1">{
+        slug := c.Param("slug")
+        articleModel, err := FindOneArticle(&amp;ArticleModel{Slug: slug})
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+                return
+        }</span>
+        <span class="cov8" title="1">articleModelValidator := NewArticleModelValidatorFillWith(articleModel)
+        if err := articleModelValidator.Bind(c); err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewValidatorError(err))
+                return
+        }</span>
+
+        <span class="cov8" title="1">articleModelValidator.articleModel.ID = articleModel.ID
+        if err := articleModel.Update(articleModelValidator.articleModel); err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := ArticleSerializer{c, articleModel}
+        c.JSON(http.StatusOK, gin.H{"article": serializer.Response()})</span>
+}
+
+func ArticleDelete(c *gin.Context) <span class="cov0" title="0">{
+        slug := c.Param("slug")
+        err := DeleteArticleModel(&amp;ArticleModel{Slug: slug})
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+                return
+        }</span>
+        <span class="cov0" title="0">c.JSON(http.StatusOK, gin.H{"article": "Delete success"})</span>
+}
+
+func ArticleFavorite(c *gin.Context) <span class="cov8" title="1">{
+        slug := c.Param("slug")
+        articleModel, err := FindOneArticle(&amp;ArticleModel{Slug: slug})
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+                return
+        }</span>
+        <span class="cov8" title="1">myUserModel := c.MustGet("my_user_model").(users.UserModel)
+        err = articleModel.favoriteBy(GetArticleUserModel(myUserModel))
+        serializer := ArticleSerializer{c, articleModel}
+        c.JSON(http.StatusOK, gin.H{"article": serializer.Response()})</span>
+}
+
+func ArticleUnfavorite(c *gin.Context) <span class="cov8" title="1">{
+        slug := c.Param("slug")
+        articleModel, err := FindOneArticle(&amp;ArticleModel{Slug: slug})
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+                return
+        }</span>
+        <span class="cov8" title="1">myUserModel := c.MustGet("my_user_model").(users.UserModel)
+        err = articleModel.unFavoriteBy(GetArticleUserModel(myUserModel))
+        serializer := ArticleSerializer{c, articleModel}
+        c.JSON(http.StatusOK, gin.H{"article": serializer.Response()})</span>
+}
+
+func ArticleCommentCreate(c *gin.Context) <span class="cov8" title="1">{
+        slug := c.Param("slug")
+        articleModel, err := FindOneArticle(&amp;ArticleModel{Slug: slug})
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("Invalid slug")))
+                return
+        }</span>
+        <span class="cov8" title="1">commentModelValidator := NewCommentModelValidator()
+        if err := commentModelValidator.Bind(c); err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewValidatorError(err))
+                return
+        }</span>
+        <span class="cov8" title="1">commentModelValidator.commentModel.Article = articleModel
+
+        if err := SaveOne(&amp;commentModelValidator.commentModel); err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := CommentSerializer{c, commentModelValidator.commentModel}
+        c.JSON(http.StatusCreated, gin.H{"comment": serializer.Response()})</span>
+}
+
+func ArticleCommentDelete(c *gin.Context) <span class="cov8" title="1">{
+        id64, err := strconv.ParseUint(c.Param("id"), 10, 32)
+        id := uint(id64)
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("Invalid id")))
+                return
+        }</span>
+        <span class="cov8" title="1">err = DeleteCommentModel([]uint{id})
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("Invalid id")))
+                return
+        }</span>
+        <span class="cov8" title="1">c.JSON(http.StatusOK, gin.H{"comment": "Delete success"})</span>
+}
+
+func ArticleCommentList(c *gin.Context) <span class="cov8" title="1">{
+        slug := c.Param("slug")
+        articleModel, err := FindOneArticle(&amp;ArticleModel{Slug: slug})
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("comments", errors.New("Invalid slug")))
+                return
+        }</span>
+        <span class="cov8" title="1">err = articleModel.getComments()
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("comments", errors.New("Database error")))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := CommentsSerializer{c, articleModel.Comments}
+        c.JSON(http.StatusOK, gin.H{"comments": serializer.Response()})</span>
+}
+func TagList(c *gin.Context) <span class="cov8" title="1">{
+        tagModels, err := getAllTags()
+        if err != nil </span><span class="cov0" title="0">{
+                c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid param")))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := TagsSerializer{c, tagModels}
+        c.JSON(http.StatusOK, gin.H{"tags": serializer.Response()})</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package articles
+
+import (
+        "github.com/gosimple/slug"
+        "realworld-backend/users"
+        "github.com/gin-gonic/gin"
+)
+
+type TagSerializer struct {
+        C *gin.Context
+        TagModel
+}
+
+type TagsSerializer struct {
+        C    *gin.Context
+        Tags []TagModel
+}
+
+func (s *TagSerializer) Response() string <span class="cov8" title="1">{
+        return s.TagModel.Tag
+}</span>
+
+func (s *TagsSerializer) Response() []string <span class="cov8" title="1">{
+        response := []string{}
+        for _, tag := range s.Tags </span><span class="cov8" title="1">{
+                serializer := TagSerializer{s.C, tag}
+                response = append(response, serializer.Response())
+        }</span>
+        <span class="cov8" title="1">return response</span>
+}
+
+type ArticleUserSerializer struct {
+        C *gin.Context
+        ArticleUserModel
+}
+
+func (s *ArticleUserSerializer) Response() users.ProfileResponse <span class="cov8" title="1">{
+        response := users.ProfileSerializer{s.C, s.ArticleUserModel.UserModel}
+        return response.Response()
+}</span>
+
+type ArticleSerializer struct {
+        C *gin.Context
+        ArticleModel
+}
+
+type ArticleResponse struct {
+        ID             uint                  `json:"-"`
+        Title          string                `json:"title"`
+        Slug           string                `json:"slug"`
+        Description    string                `json:"description"`
+        Body           string                `json:"body"`
+        CreatedAt      string                `json:"createdAt"`
+        UpdatedAt      string                `json:"updatedAt"`
+        Author         users.ProfileResponse `json:"author"`
+        Tags           []string              `json:"tagList"`
+        Favorite       bool                  `json:"favorited"`
+        FavoritesCount uint                  `json:"favoritesCount"`
+}
+
+type ArticlesSerializer struct {
+        C        *gin.Context
+        Articles []ArticleModel
+}
+
+func (s *ArticleSerializer) Response() ArticleResponse <span class="cov8" title="1">{
+        myUserModel := s.C.MustGet("my_user_model").(users.UserModel)
+        authorSerializer := ArticleUserSerializer{s.C, s.Author}
+        response := ArticleResponse{
+                ID:          s.ID,
+                Slug:        slug.Make(s.Title),
+                Title:       s.Title,
+                Description: s.Description,
+                Body:        s.Body,
+                CreatedAt:   s.CreatedAt.UTC().Format("2006-01-02T15:04:05.999Z"),
+                //UpdatedAt:      s.UpdatedAt.UTC().Format(time.RFC3339Nano),
+                UpdatedAt:      s.UpdatedAt.UTC().Format("2006-01-02T15:04:05.999Z"),
+                Author:         authorSerializer.Response(),
+                Favorite:       s.isFavoriteBy(GetArticleUserModel(myUserModel)),
+                FavoritesCount: s.favoritesCount(),
+        }
+        response.Tags = make([]string, 0)
+        for _, tag := range s.Tags </span><span class="cov8" title="1">{
+                serializer := TagSerializer{s.C, tag}
+                response.Tags = append(response.Tags, serializer.Response())
+        }</span>
+        <span class="cov8" title="1">return response</span>
+}
+
+func (s *ArticlesSerializer) Response() []ArticleResponse <span class="cov8" title="1">{
+        response := []ArticleResponse{}
+        for _, article := range s.Articles </span><span class="cov8" title="1">{
+                serializer := ArticleSerializer{s.C, article}
+                response = append(response, serializer.Response())
+        }</span>
+        <span class="cov8" title="1">return response</span>
+}
+
+type CommentSerializer struct {
+        C *gin.Context
+        CommentModel
+}
+
+type CommentsSerializer struct {
+        C        *gin.Context
+        Comments []CommentModel
+}
+
+type CommentResponse struct {
+        ID        uint                  `json:"id"`
+        Body      string                `json:"body"`
+        CreatedAt string                `json:"createdAt"`
+        UpdatedAt string                `json:"updatedAt"`
+        Author    users.ProfileResponse `json:"author"`
+}
+
+func (s *CommentSerializer) Response() CommentResponse <span class="cov8" title="1">{
+        authorSerializer := ArticleUserSerializer{s.C, s.Author}
+        response := CommentResponse{
+                ID:        s.ID,
+                Body:      s.Body,
+                CreatedAt: s.CreatedAt.UTC().Format("2006-01-02T15:04:05.999Z"),
+                UpdatedAt: s.UpdatedAt.UTC().Format("2006-01-02T15:04:05.999Z"),
+                Author:    authorSerializer.Response(),
+        }
+        return response
+}</span>
+
+func (s *CommentsSerializer) Response() []CommentResponse <span class="cov8" title="1">{
+        response := []CommentResponse{}
+        for _, comment := range s.Comments </span><span class="cov8" title="1">{
+                serializer := CommentSerializer{s.C, comment}
+                response = append(response, serializer.Response())
+        }</span>
+        <span class="cov8" title="1">return response</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package articles
+
+import (
+        "github.com/gosimple/slug"
+        "realworld-backend/common"
+        "realworld-backend/users"
+        "github.com/gin-gonic/gin"
+)
+
+type ArticleModelValidator struct {
+        Article struct {
+                Title       string   `form:"title" json:"title" binding:"required,min=4"`
+                Description string   `form:"description" json:"description" binding:"max=2048"`
+                Body        string   `form:"body" json:"body" binding:"max=2048"`
+                Tags        []string `form:"tagList" json:"tagList"`
+        } `json:"article"`
+        articleModel ArticleModel `json:"-"`
+}
+
+func NewArticleModelValidator() ArticleModelValidator <span class="cov8" title="1">{
+        return ArticleModelValidator{}
+}</span>
+
+func NewArticleModelValidatorFillWith(articleModel ArticleModel) ArticleModelValidator <span class="cov8" title="1">{
+        articleModelValidator := NewArticleModelValidator()
+        articleModelValidator.Article.Title = articleModel.Title
+        articleModelValidator.Article.Description = articleModel.Description
+        articleModelValidator.Article.Body = articleModel.Body
+        for _, tagModel := range articleModel.Tags </span><span class="cov0" title="0">{
+                articleModelValidator.Article.Tags = append(articleModelValidator.Article.Tags, tagModel.Tag)
+        }</span>
+        <span class="cov8" title="1">return articleModelValidator</span>
+}
+
+func (s *ArticleModelValidator) Bind(c *gin.Context) error <span class="cov8" title="1">{
+        myUserModel := c.MustGet("my_user_model").(users.UserModel)
+
+        err := common.Bind(c, s)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">s.articleModel.Slug = slug.Make(s.Article.Title)
+        s.articleModel.Title = s.Article.Title
+        s.articleModel.Description = s.Article.Description
+        s.articleModel.Body = s.Article.Body
+        s.articleModel.Author = GetArticleUserModel(myUserModel)
+        s.articleModel.setTags(s.Article.Tags)
+        return nil</span>
+}
+
+type CommentModelValidator struct {
+        Comment struct {
+                Body string `form:"body" json:"body" binding:"max=2048"`
+        } `json:"comment"`
+        commentModel CommentModel `json:"-"`
+}
+
+func NewCommentModelValidator() CommentModelValidator <span class="cov8" title="1">{
+        return CommentModelValidator{}
+}</span>
+
+func (s *CommentModelValidator) Bind(c *gin.Context) error <span class="cov8" title="1">{
+        myUserModel := c.MustGet("my_user_model").(users.UserModel)
+
+        err := common.Bind(c, s)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">s.commentModel.Body = s.Comment.Body
+        s.commentModel.Author = GetArticleUserModel(myUserModel)
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package common
+
+import (
+        "fmt"
+        "github.com/jinzhu/gorm"
+        _ "github.com/jinzhu/gorm/dialects/sqlite"
+        "os"
+)
+
+type Database struct {
+        *gorm.DB
+}
+
+var DB *gorm.DB
+
+// Opening a database and save the reference to `Database` struct.
+func Init() *gorm.DB <span class="cov8" title="1">{
+        db, err := gorm.Open("sqlite3", "./../gorm.db")
+        if err != nil </span><span class="cov8" title="1">{
+                fmt.Println("db err: (Init) ", err)
+        }</span>
+        <span class="cov8" title="1">db.DB().SetMaxIdleConns(10)
+        //db.LogMode(true)
+        DB = db
+        return DB</span>
+}
+
+// This function will create a temporarily database for running testing cases
+func TestDBInit() *gorm.DB <span class="cov8" title="1">{
+        test_db, err := gorm.Open("sqlite3", "./../gorm_test.db")
+        if err != nil </span><span class="cov8" title="1">{
+                fmt.Println("db err: (TestDBInit) ", err)
+        }</span>
+        <span class="cov8" title="1">test_db.DB().SetMaxIdleConns(3)
+        test_db.LogMode(true)
+        DB = test_db
+        return DB</span>
+}
+
+// Delete the database after running testing cases.
+func TestDBFree(test_db *gorm.DB) error <span class="cov8" title="1">{
+        test_db.Close()
+        err := os.Remove("./../gorm_test.db")
+        return err
+}</span>
+
+// Using this function to get a connection, you can create your connection pool here.
+func GetDB() *gorm.DB <span class="cov8" title="1">{
+        return DB
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">// Common tools and helper functions
+package common
+
+import (
+        "fmt"
+        "math/rand"
+        "time"
+
+        "github.com/dgrijalva/jwt-go"
+        "github.com/go-playground/validator/v10"
+
+        "github.com/gin-gonic/gin/binding"
+        "github.com/gin-gonic/gin"
+)
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+// A helper function to generate random string
+func RandString(n int) string <span class="cov8" title="1">{
+        b := make([]rune, n)
+        for i := range b </span><span class="cov8" title="1">{
+                b[i] = letters[rand.Intn(len(letters))]
+        }</span>
+        <span class="cov8" title="1">return string(b)</span>
+}
+
+// Keep this two config private, it should not expose to open source
+const NBSecretPassword = "A String Very Very Very Strong!!@##$!@#$"
+const NBRandomPassword = "A String Very Very Very Niubilty!!@##$!@#4"
+
+// A Util function to generate jwt_token which can be used in the request header
+func GenToken(id uint) string <span class="cov8" title="1">{
+        jwt_token := jwt.New(jwt.GetSigningMethod("HS256"))
+        // Set some claims
+        jwt_token.Claims = jwt.MapClaims{
+                "id":  id,
+                "exp": time.Now().Add(time.Hour * 24).Unix(),
+        }
+        // Sign and get the complete encoded token as a string
+        token, _ := jwt_token.SignedString([]byte(NBSecretPassword))
+        return token
+}</span>
+
+// My own Error type that will help return my customized Error info
+//  {"database": {"hello":"no such table", error: "not_exists"}}
+type CommonError struct {
+        Errors map[string]interface{} `json:"errors"`
+}
+
+// To handle the error returned by c.Bind in gin framework
+// https://github.com/go-playground/validator/blob/v9/_examples/translations/main.go
+func NewValidatorError(err error) CommonError <span class="cov8" title="1">{
+        res := CommonError{}
+        res.Errors = make(map[string]interface{})
+        errs := err.(validator.ValidationErrors)
+        for _, v := range errs </span><span class="cov8" title="1">{
+                // can translate each error one at a time.
+                //fmt.Println("gg",v.NameNamespace)
+                if v.Param() != "" </span><span class="cov8" title="1">{
+                        res.Errors[v.Field()] = fmt.Sprintf("{%v: %v}", v.Tag(), v.Param())
+                }</span> else<span class="cov8" title="1"> {
+                        res.Errors[v.Field()] = fmt.Sprintf("{key: %v}", v.Tag())
+                }</span>
+
+        }
+        <span class="cov8" title="1">return res</span>
+}
+
+// Warp the error info in a object
+func NewError(key string, err error) CommonError <span class="cov8" title="1">{
+        res := CommonError{}
+        res.Errors = make(map[string]interface{})
+        res.Errors[key] = err.Error()
+        return res
+}</span>
+
+// Changed the c.MustBindWith() -&gt;  c.ShouldBindWith().
+// I don't want to auto return 400 when error happened.
+// origin function is here: https://github.com/gin-gonic/gin/blob/master/context.go
+func Bind(c *gin.Context, obj interface{}) error <span class="cov8" title="1">{
+        b := binding.Default(c.Request.Method, c.ContentType())
+        return c.ShouldBindWith(obj, b)
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package main
+
+import (
+        "fmt"
+
+        "github.com/gin-gonic/gin"
+        "github.com/gin-contrib/cors"
+
+        "github.com/jinzhu/gorm"
+        "realworld-backend/articles"
+        "realworld-backend/common"
+        "realworld-backend/users"
+)
+
+func Migrate(db *gorm.DB) <span class="cov0" title="0">{
+        users.AutoMigrate()
+        db.AutoMigrate(&amp;articles.ArticleModel{})
+        db.AutoMigrate(&amp;articles.TagModel{})
+        db.AutoMigrate(&amp;articles.FavoriteModel{})
+        db.AutoMigrate(&amp;articles.ArticleUserModel{})
+        db.AutoMigrate(&amp;articles.CommentModel{})
+}</span>
+
+func main() <span class="cov0" title="0">{
+
+        db := common.Init()
+        Migrate(db)
+        defer db.Close()
+
+        r := gin.Default()
+
+        // Configure CORS
+        r.Use(cors.New(cors.Config{
+                AllowOrigins:     []string{"http://localhost:4100"},
+                AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+                AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+                AllowCredentials: true,
+        }))
+
+        v1 := r.Group("/api")
+        users.UsersRegister(v1.Group("/users"))
+        v1.Use(users.AuthMiddleware(false))
+        articles.ArticlesAnonymousRegister(v1.Group("/articles"))
+        articles.TagsAnonymousRegister(v1.Group("/tags"))
+
+        v1.Use(users.AuthMiddleware(true))
+        users.UserRegister(v1.Group("/user"))
+        users.ProfileRegister(v1.Group("/profiles"))
+
+        articles.ArticlesRegister(v1.Group("/articles"))
+
+        testAuth := r.Group("/api/ping")
+
+        testAuth.GET("/", func(c *gin.Context) </span><span class="cov0" title="0">{
+                c.JSON(200, gin.H{
+                        "message": "pong",
+                })
+        }</span>)
+
+        // test 1 to 1
+        <span class="cov0" title="0">tx1 := db.Begin()
+        userA := users.UserModel{
+                Username: "AAAAAAAAAAAAAAAA",
+                Email:    "aaaa@g.cn",
+                Bio:      "hehddeda",
+                Image:    nil,
+        }
+        tx1.Save(&amp;userA)
+        tx1.Commit()
+        fmt.Println(userA)
+
+        //db.Save(&amp;ArticleUserModel{
+        //    UserModelID:userA.ID,
+        //})
+        //var userAA ArticleUserModel
+        //db.Where(&amp;ArticleUserModel{
+        //    UserModelID:userA.ID,
+        //}).First(&amp;userAA)
+        //fmt.Println(userAA)
+
+        r.Run()</span> // listen and serve on 0.0.0.0:8080
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package users
+
+import (
+        "github.com/dgrijalva/jwt-go"
+        "github.com/dgrijalva/jwt-go/request"
+        "realworld-backend/common"
+        "github.com/gin-gonic/gin"
+        "net/http"
+        "strings"
+)
+
+// Strips 'TOKEN ' prefix from token string
+func stripBearerPrefixFromTokenString(tok string) (string, error) <span class="cov8" title="1">{
+        // Should be a bearer token
+        if len(tok) &gt; 5 &amp;&amp; strings.ToUpper(tok[0:6]) == "TOKEN " </span><span class="cov8" title="1">{
+                return tok[6:], nil
+        }</span>
+        <span class="cov8" title="1">return tok, nil</span>
+}
+
+// Extract  token from Authorization header
+// Uses PostExtractionFilter to strip "TOKEN " prefix from header
+var AuthorizationHeaderExtractor = &amp;request.PostExtractionFilter{
+        request.HeaderExtractor{"Authorization"},
+        stripBearerPrefixFromTokenString,
+}
+
+// Extractor for OAuth2 access tokens.  Looks in 'Authorization'
+// header then 'access_token' argument for a token.
+var MyAuth2Extractor = &amp;request.MultiExtractor{
+        AuthorizationHeaderExtractor,
+        request.ArgumentExtractor{"access_token"},
+}
+
+// A helper to write user_id and user_model to the context
+func UpdateContextUserModel(c *gin.Context, my_user_id uint) <span class="cov8" title="1">{
+        var myUserModel UserModel
+        if my_user_id != 0 </span><span class="cov8" title="1">{
+                db := common.GetDB()
+                db.First(&amp;myUserModel, my_user_id)
+        }</span>
+        <span class="cov8" title="1">c.Set("my_user_id", my_user_id)
+        c.Set("my_user_model", myUserModel)</span>
+}
+
+// You can custom middlewares yourself as the doc: https://github.com/gin-gonic/gin#custom-middleware
+//  r.Use(AuthMiddleware(true))
+func AuthMiddleware(auto401 bool) gin.HandlerFunc <span class="cov8" title="1">{
+        return func(c *gin.Context) </span><span class="cov8" title="1">{
+                UpdateContextUserModel(c, 0)
+                token, err := request.ParseFromRequest(c.Request, MyAuth2Extractor, func(token *jwt.Token) (interface{}, error) </span><span class="cov8" title="1">{
+                        b := ([]byte(common.NBSecretPassword))
+                        return b, nil
+                }</span>)
+                <span class="cov8" title="1">if err != nil </span><span class="cov8" title="1">{
+                        if auto401 </span><span class="cov8" title="1">{
+                                c.AbortWithError(http.StatusUnauthorized, err)
+                        }</span>
+                        <span class="cov8" title="1">return</span>
+                }
+                <span class="cov8" title="1">if claims, ok := token.Claims.(jwt.MapClaims); ok &amp;&amp; token.Valid </span><span class="cov8" title="1">{
+                        my_user_id := uint(claims["id"].(float64))
+                        //fmt.Println(my_user_id,claims["id"])
+                        UpdateContextUserModel(c, my_user_id)
+                }</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package users
+
+import (
+        "errors"
+        "github.com/jinzhu/gorm"
+        "realworld-backend/common"
+        "golang.org/x/crypto/bcrypt"
+)
+
+// Models should only be concerned with database schema, more strict checking should be put in validator.
+//
+// More detail you can find here: http://jinzhu.me/gorm/models.html#model-definition
+//
+// HINT: If you want to split null and "", you should use *string instead of string.
+type UserModel struct {
+        ID           uint    `gorm:"primary_key"`
+        Username     string  `gorm:"column:username"`
+        Email        string  `gorm:"column:email;unique_index"`
+        Bio          string  `gorm:"column:bio;size:1024"`
+        Image        *string `gorm:"column:image"`
+        PasswordHash string  `gorm:"column:password;not null"`
+}
+
+// A hack way to save ManyToMany relationship,
+// gorm will build the alias as FollowingBy &lt;-&gt; FollowingByID &lt;-&gt; "following_by_id".
+//
+// DB schema looks like: id, created_at, updated_at, deleted_at, following_id, followed_by_id.
+//
+// Retrieve them by:
+//         db.Where(FollowModel{ FollowingID:  v.ID, FollowedByID: u.ID, }).First(&amp;follow)
+//         db.Where(FollowModel{ FollowedByID: u.ID, }).Find(&amp;follows)
+//
+// More details about gorm.Model: http://jinzhu.me/gorm/models.html#conventions
+type FollowModel struct {
+        gorm.Model
+        Following    UserModel
+        FollowingID  uint
+        FollowedBy   UserModel
+        FollowedByID uint
+}
+
+// Migrate the schema of database if needed
+func AutoMigrate() <span class="cov8" title="1">{
+        db := common.GetDB()
+
+        db.AutoMigrate(&amp;UserModel{})
+        db.AutoMigrate(&amp;FollowModel{})
+}</span>
+
+// What's bcrypt? https://en.wikipedia.org/wiki/Bcrypt
+// Golang bcrypt doc: https://godoc.org/golang.org/x/crypto/bcrypt
+// You can change the value in bcrypt.DefaultCost to adjust the security index.
+//         err := userModel.setPassword("password0")
+func (u *UserModel) setPassword(password string) error <span class="cov8" title="1">{
+        if len(password) == 0 </span><span class="cov8" title="1">{
+                return errors.New("password should not be empty!")
+        }</span>
+        <span class="cov8" title="1">bytePassword := []byte(password)
+        // Make sure the second param `bcrypt generator cost` between [4, 32)
+        passwordHash, _ := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
+        u.PasswordHash = string(passwordHash)
+        return nil</span>
+}
+
+// Database will only save the hashed string, you should check it by util function.
+//         if err := serModel.checkPassword("password0"); err != nil { password error }
+func (u *UserModel) checkPassword(password string) error <span class="cov8" title="1">{
+        bytePassword := []byte(password)
+        byteHashedPassword := []byte(u.PasswordHash)
+        return bcrypt.CompareHashAndPassword(byteHashedPassword, bytePassword)
+}</span>
+
+// You could input the conditions and it will return an UserModel in database with error info.
+//         userModel, err := FindOneUser(&amp;UserModel{Username: "username0"})
+func FindOneUser(condition interface{}) (UserModel, error) <span class="cov8" title="1">{
+        db := common.GetDB()
+        var model UserModel
+        err := db.Where(condition).First(&amp;model).Error
+        return model, err
+}</span>
+
+// You could input an UserModel which will be saved in database returning with error info
+//         if err := SaveOne(&amp;userModel); err != nil { ... }
+func SaveOne(data interface{}) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        err := db.Save(data).Error
+        return err
+}</span>
+
+// You could update properties of an UserModel to database returning with error info.
+//  err := db.Model(userModel).Update(UserModel{Username: "wangzitian0"}).Error
+func (model *UserModel) Update(data interface{}) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        err := db.Model(model).Update(data).Error
+        return err
+}</span>
+
+// You could add a following relationship as userModel1 following userModel2
+//         err = userModel1.following(userModel2)
+func (u UserModel) following(v UserModel) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        var follow FollowModel
+        err := db.FirstOrCreate(&amp;follow, &amp;FollowModel{
+                FollowingID:  v.ID,
+                FollowedByID: u.ID,
+        }).Error
+        return err
+}</span>
+
+// You could check whether  userModel1 following userModel2
+//         followingBool = myUserModel.isFollowing(self.UserModel)
+func (u UserModel) isFollowing(v UserModel) bool <span class="cov8" title="1">{
+        db := common.GetDB()
+        var follow FollowModel
+        db.Where(FollowModel{
+                FollowingID:  v.ID,
+                FollowedByID: u.ID,
+        }).First(&amp;follow)
+        return follow.ID != 0
+}</span>
+
+// You could delete a following relationship as userModel1 following userModel2
+//         err = userModel1.unFollowing(userModel2)
+func (u UserModel) unFollowing(v UserModel) error <span class="cov8" title="1">{
+        db := common.GetDB()
+        err := db.Where(FollowModel{
+                FollowingID:  v.ID,
+                FollowedByID: u.ID,
+        }).Delete(FollowModel{}).Error
+        return err
+}</span>
+
+// You could get a following list of userModel
+//         followings := userModel.GetFollowings()
+func (u UserModel) GetFollowings() []UserModel <span class="cov8" title="1">{
+        db := common.GetDB()
+        tx := db.Begin()
+        var follows []FollowModel
+        var followings []UserModel
+        tx.Where(FollowModel{
+                FollowedByID: u.ID,
+        }).Find(&amp;follows)
+        for _, follow := range follows </span><span class="cov8" title="1">{
+                var userModel UserModel
+                tx.Model(&amp;follow).Related(&amp;userModel, "Following")
+                followings = append(followings, userModel)
+        }</span>
+        <span class="cov8" title="1">tx.Commit()
+        return followings</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package users
+
+import (
+        "errors"
+        "realworld-backend/common"
+        "github.com/gin-gonic/gin"
+        "net/http"
+)
+
+func UsersRegister(router *gin.RouterGroup) <span class="cov8" title="1">{
+        router.POST("/", UsersRegistration)
+        router.POST("/login", UsersLogin)
+}</span>
+
+func UserRegister(router *gin.RouterGroup) <span class="cov8" title="1">{
+        router.GET("/", UserRetrieve)
+        router.PUT("/", UserUpdate)
+}</span>
+
+func ProfileRegister(router *gin.RouterGroup) <span class="cov8" title="1">{
+        router.GET("/:username", ProfileRetrieve)
+        router.POST("/:username/follow", ProfileFollow)
+        router.DELETE("/:username/follow", ProfileUnfollow)
+}</span>
+
+func ProfileRetrieve(c *gin.Context) <span class="cov8" title="1">{
+        username := c.Param("username")
+        userModel, err := FindOneUser(&amp;UserModel{Username: username})
+        if err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("Invalid username")))
+                return
+        }</span>
+        <span class="cov8" title="1">profileSerializer := ProfileSerializer{c, userModel}
+        c.JSON(http.StatusOK, gin.H{"profile": profileSerializer.Response()})</span>
+}
+
+func ProfileFollow(c *gin.Context) <span class="cov8" title="1">{
+        username := c.Param("username")
+        userModel, err := FindOneUser(&amp;UserModel{Username: username})
+        if err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("Invalid username")))
+                return
+        }</span>
+        <span class="cov8" title="1">myUserModel := c.MustGet("my_user_model").(UserModel)
+        err = myUserModel.following(userModel)
+        if err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := ProfileSerializer{c, userModel}
+        c.JSON(http.StatusOK, gin.H{"profile": serializer.Response()})</span>
+}
+
+func ProfileUnfollow(c *gin.Context) <span class="cov8" title="1">{
+        username := c.Param("username")
+        userModel, err := FindOneUser(&amp;UserModel{Username: username})
+        if err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("Invalid username")))
+                return
+        }</span>
+        <span class="cov8" title="1">myUserModel := c.MustGet("my_user_model").(UserModel)
+
+        err = myUserModel.unFollowing(userModel)
+        if err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+                return
+        }</span>
+        <span class="cov8" title="1">serializer := ProfileSerializer{c, userModel}
+        c.JSON(http.StatusOK, gin.H{"profile": serializer.Response()})</span>
+}
+
+func UsersRegistration(c *gin.Context) <span class="cov8" title="1">{
+        userModelValidator := NewUserModelValidator()
+        if err := userModelValidator.Bind(c); err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewValidatorError(err))
+                return
+        }</span>
+
+        <span class="cov8" title="1">if err := SaveOne(&amp;userModelValidator.userModel); err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+                return
+        }</span>
+        <span class="cov8" title="1">c.Set("my_user_model", userModelValidator.userModel)
+        serializer := UserSerializer{c}
+        c.JSON(http.StatusCreated, gin.H{"user": serializer.Response()})</span>
+}
+
+func UsersLogin(c *gin.Context) <span class="cov8" title="1">{
+        loginValidator := NewLoginValidator()
+        if err := loginValidator.Bind(c); err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewValidatorError(err))
+                return
+        }</span>
+        <span class="cov8" title="1">userModel, err := FindOneUser(&amp;UserModel{Email: loginValidator.userModel.Email})
+
+        if err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusForbidden, common.NewError("login", errors.New("Not Registered email or invalid password")))
+                return
+        }</span>
+
+        <span class="cov8" title="1">if userModel.checkPassword(loginValidator.User.Password) != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusForbidden, common.NewError("login", errors.New("Not Registered email or invalid password")))
+                return
+        }</span>
+        <span class="cov8" title="1">UpdateContextUserModel(c, userModel.ID)
+        serializer := UserSerializer{c}
+        c.JSON(http.StatusOK, gin.H{"user": serializer.Response()})</span>
+}
+
+func UserRetrieve(c *gin.Context) <span class="cov8" title="1">{
+        serializer := UserSerializer{c}
+        c.JSON(http.StatusOK, gin.H{"user": serializer.Response()})
+}</span>
+
+func UserUpdate(c *gin.Context) <span class="cov8" title="1">{
+        myUserModel := c.MustGet("my_user_model").(UserModel)
+        userModelValidator := NewUserModelValidatorFillWith(myUserModel)
+        if err := userModelValidator.Bind(c); err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewValidatorError(err))
+                return
+        }</span>
+
+        <span class="cov8" title="1">userModelValidator.userModel.ID = myUserModel.ID
+        if err := myUserModel.Update(userModelValidator.userModel); err != nil </span><span class="cov8" title="1">{
+                c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+                return
+        }</span>
+        <span class="cov8" title="1">UpdateContextUserModel(c, myUserModel.ID)
+        serializer := UserSerializer{c}
+        c.JSON(http.StatusOK, gin.H{"user": serializer.Response()})</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package users
+
+import (
+        "github.com/gin-gonic/gin"
+
+        "realworld-backend/common"
+)
+
+type ProfileSerializer struct {
+        C *gin.Context
+        UserModel
+}
+
+// Declare your response schema here
+type ProfileResponse struct {
+        ID        uint    `json:"-"`
+        Username  string  `json:"username"`
+        Bio       string  `json:"bio"`
+        Image     *string `json:"image"`
+        Following bool    `json:"following"`
+}
+
+// Put your response logic including wrap the userModel here.
+func (self *ProfileSerializer) Response() ProfileResponse <span class="cov8" title="1">{
+        myUserModel := self.C.MustGet("my_user_model").(UserModel)
+        profile := ProfileResponse{
+                ID:        self.ID,
+                Username:  self.Username,
+                Bio:       self.Bio,
+                Image:     self.Image,
+                Following: myUserModel.isFollowing(self.UserModel),
+        }
+        return profile
+}</span>
+
+type UserSerializer struct {
+        c *gin.Context
+}
+
+type UserResponse struct {
+        Username string  `json:"username"`
+        Email    string  `json:"email"`
+        Bio      string  `json:"bio"`
+        Image    *string `json:"image"`
+        Token    string  `json:"token"`
+}
+
+func (self *UserSerializer) Response() UserResponse <span class="cov8" title="1">{
+        myUserModel := self.c.MustGet("my_user_model").(UserModel)
+        user := UserResponse{
+                Username: myUserModel.Username,
+                Email:    myUserModel.Email,
+                Bio:      myUserModel.Bio,
+                Image:    myUserModel.Image,
+                Token:    common.GenToken(myUserModel.ID),
+        }
+        return user
+}</span>
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package users
+
+import (
+        "realworld-backend/common"
+        "github.com/gin-gonic/gin"
+)
+
+// *ModelValidator containing two parts:
+// - Validator: write the form/json checking rule according to the doc https://github.com/go-playground/validator
+// - DataModel: fill with data from Validator after invoking common.Bind(c, self)
+// Then, you can just call model.save() after the data is ready in DataModel.
+type UserModelValidator struct {
+        User struct {
+                Username string `form:"username" json:"username" binding:"alphanum,min=4,max=255"`
+                Email    string `form:"email" json:"email" binding:"email"`
+                Password string `form:"password" json:"password" binding:"min=8,max=255"`
+                Bio      string `form:"bio" json:"bio" binding:"max=1024"`
+                Image    string `form:"image" json:"image" binding:"omitempty,url"`
+        } `json:"user"`
+        userModel UserModel `json:"-"`
+}
+
+// There are some difference when you create or update a model, you need to fill the DataModel before
+// update so that you can use your origin data to cheat the validator.
+// BTW, you can put your general binding logic here such as setting password.
+func (self *UserModelValidator) Bind(c *gin.Context) error <span class="cov8" title="1">{
+        err := common.Bind(c, self)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">self.userModel.Username = self.User.Username
+        self.userModel.Email = self.User.Email
+        self.userModel.Bio = self.User.Bio
+
+        if self.User.Password != common.NBRandomPassword </span><span class="cov8" title="1">{
+                self.userModel.setPassword(self.User.Password)
+        }</span>
+        <span class="cov8" title="1">if self.User.Image != "" </span><span class="cov8" title="1">{
+                self.userModel.Image = &amp;self.User.Image
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// You can put the default value of a Validator here
+func NewUserModelValidator() UserModelValidator <span class="cov8" title="1">{
+        userModelValidator := UserModelValidator{}
+        //userModelValidator.User.Email ="w@g.cn"
+        return userModelValidator
+}</span>
+
+func NewUserModelValidatorFillWith(userModel UserModel) UserModelValidator <span class="cov8" title="1">{
+        userModelValidator := NewUserModelValidator()
+        userModelValidator.User.Username = userModel.Username
+        userModelValidator.User.Email = userModel.Email
+        userModelValidator.User.Bio = userModel.Bio
+        userModelValidator.User.Password = common.NBRandomPassword
+
+        if userModel.Image != nil </span><span class="cov8" title="1">{
+                userModelValidator.User.Image = *userModel.Image
+        }</span>
+        <span class="cov8" title="1">return userModelValidator</span>
+}
+
+type LoginValidator struct {
+        User struct {
+                Email    string `form:"email" json:"email" binding:"required,email"`
+                Password string `form:"password" json:"password" binding:"required,min=8,max=255"`
+        } `json:"user"`
+        userModel UserModel `json:"-"`
+}
+
+func (self *LoginValidator) Bind(c *gin.Context) error <span class="cov8" title="1">{
+        err := common.Bind(c, self)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">self.userModel.Email = self.User.Email
+        return nil</span>
+}
+
+// You can put the default value of a Validator here
+func NewLoginValidator() LoginValidator <span class="cov8" title="1">{
+        loginValidator := LoginValidator{}
+        return loginValidator
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
