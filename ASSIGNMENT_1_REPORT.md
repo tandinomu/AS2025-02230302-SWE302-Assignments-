@@ -1,14 +1,4 @@
-Here is **the exact same report with *no emojis*** — nothing else changed:
-
----
-
-# Assignment 1: Unit Testing, Integration Testing & Test Coverage - Final Report
-
-**Student Name:** [Your Name]
-**Course:** SWE302
-**Date:** December 3, 2025
-**Assignment:** Testing & Test Coverage Analysis
-
+# Assignment 1: Unit Testing, Integration Testing & Test Coverage 
 ---
 
 ## Executive Summary
@@ -125,12 +115,12 @@ Total integration tests: 26/29 passing
 
 #### 3.1 Coverage Results
 
-| Package   | Coverage | Status   | Requirement |
-| --------- | -------- | -------- | ----------- |
-| common/   | 100%     | Complete | 70%         |
-| users/    | 100%     | Complete | 70%         |
-| articles/ | 72.3%    | Exceeds  | 70%         |
-| Overall   | 90.8%    | Exceeds  | 70%         |
+| Package   | Coverage | Status   | 
+| --------- | -------- | -------- | 
+| common/   | 100%     | Complete | 
+| users/    | 100%     | Complete | 
+| articles/ | 72.3%    | Exceeds  | 
+| Overall   | 90.8%    | Exceeds  | 
 
 Coverage Improvement:
 
