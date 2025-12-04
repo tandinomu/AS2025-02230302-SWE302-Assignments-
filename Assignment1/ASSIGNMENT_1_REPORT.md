@@ -312,16 +312,16 @@ Screenshots (12 total):
 
 Backend: 
 #5
-![s5](./screenshots/backend/s5.png)
+![s5](./images/s5.png)
 
 #6
-![s6](./screenshots/backend/s6.png)
+![s6](./images/s6.png)
 
 #7 (coverage reports)
-![s7](./screenshots/backend/s7.png)
+![s7](./images/s7.png)
 
 Frontend: 
-![s4](./screenshots/backend/s4fe.png)
-![s5](./screenshots/backend/s5fe.png)
+![s4](./images/s4fe.png)
+![s5](./images/s5fe.png)
 s6 (test results)
-![s6](./screenshots/backend/s6fe.png)
+![s6](./images/s6fe.png)

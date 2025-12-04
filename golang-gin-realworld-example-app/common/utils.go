@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/go-playground/validator/v10"
 
 	"github.com/gin-gonic/gin/binding"

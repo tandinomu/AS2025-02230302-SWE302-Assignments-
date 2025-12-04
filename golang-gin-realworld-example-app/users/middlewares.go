@@ -1,8 +1,8 @@
 package users
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/dgrijalva/jwt-go/request"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5/request"
 	"realworld-backend/common"
 	"github.com/gin-gonic/gin"
 	"net/http"
