@@ -19,12 +19,6 @@ func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&articles.FavoriteModel{})
 	db.AutoMigrate(&articles.ArticleUserModel{})
 	db.AutoMigrate(&articles.CommentModel{})
-	// Add indexes for performance optimization
-	db.Model(&articles.ArticleModel{}).AddIndex("idx_article_created_at", "created_at")
-	db.Model(&articles.ArticleModel{}).AddIndex("idx_article_slug", "slug")
-	db.Model(&articles.CommentModel{}).AddIndex("idx_comment_article_id", "article_id")
-	fmt.Println("Performance indexes created successfully")
-
 }
 
 func main() {
@@ -85,10 +79,4 @@ func main() {
 	//fmt.Println(userAA)
 
 	r.Run() // listen and serve on 0.0.0.0:8080
-	// Add indexes for performance optimization
-	db.Model(&articles.ArticleModel{}).AddIndex("idx_article_created_at", "created_at")
-	db.Model(&articles.ArticleModel{}).AddIndex("idx_article_slug", "slug")
-	db.Model(&articles.CommentModel{}).AddIndex("idx_comment_article_id", "article_id")
-	fmt.Println("Performance indexes created successfully")
-
 }
